@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NUBO – Festival App Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B0B1E; --glass:rgba(255,255,255,.065); --glass2:rgba(255,255,255,.11); --edge:rgba(255,255,255,.10);
+    --text:#F4F2FF; --muted:#ABA9CB;
+    --lav:#C9BCFF; --lav-ink:#17123A; --lav-soft:rgba(201,188,255,.16);
+    --peach:#FFC78A; --sky:#8FD3FF; --coral:#FF8A9A; --mint:#9BE8C8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:#06061A;color:var(--text);font-family:Inter,system-ui,sans-serif;display:flex;gap:48px;align-items:center;justify-content:center;padding:32px 16px;flex-wrap:wrap}
+  .side{max-width:280px;display:flex;flex-direction:column;gap:16px}
+  .side h1{font-family:Unbounded,sans-serif;font-weight:600;font-size:24px;margin:0;line-height:1.2}
+  .side p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+  .side ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+  .side button{width:100%;text-align:left;background:var(--glass);border:1px solid var(--edge);color:var(--text);border-radius:14px;padding:11px 14px;font:500 14px Inter,sans-serif;cursor:pointer;min-height:44px}
+  .side button[aria-current="true"]{border-color:var(--lav);color:var(--lav);background:var(--lav-soft)}
+
+  .phone{width:390px;height:844px;border-radius:48px;border:10px solid #1B1A33;box-shadow:0 40px 100px rgba(40,20,120,.45),0 0 0 1px rgba(255,255,255,.06);overflow:hidden;display:flex;flex-direction:column;position:relative;
+    background:
+      radial-gradient(420px 320px at 15% -8%, rgba(132,104,255,.38), transparent 70%),
+      radial-gradient(360px 300px at 110% 35%, rgba(70,150,255,.20), transparent 70%),
+      radial-gradient(300px 260px at -10% 95%, rgba(255,150,120,.14), transparent 70%),
+      var(--ink)}
+  .stars{position:absolute;inset:0;pointer-events:none;background-image:
+      radial-gradient(1.2px 1.2px at 40px 60px,#fff8,transparent),radial-gradient(1px 1px at 300px 40px,#fff7,transparent),
+      radial-gradient(1.4px 1.4px at 220px 120px,#fff6,transparent),radial-gradient(1px 1px at 120px 200px,#fff5,transparent),
+      radial-gradient(1.2px 1.2px at 340px 260px,#fff6,transparent),radial-gradient(1px 1px at 60px 420px,#fff4,transparent),
+      radial-gradient(1px 1px at 260px 560px,#fff4,transparent),radial-gradient(1.3px 1.3px at 30px 700px,#fff5,transparent)}
+  .screen{flex:1;overflow-y:auto;padding:30px 20px 112px;display:flex;flex-direction:column;gap:18px;position:relative}
+  .screen::-webkit-scrollbar{width:0}
+  h2.title{font-family:Unbounded,sans-serif;font-weight:600;font-size:26px;margin:0;line-height:1.15;letter-spacing:-.01em}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
+  .muted{color:var(--muted)}
+  .row{display:flex;align-items:center;gap:10px}
+  .between{justify-content:space-between}
+  .card{background:var(--glass);border:1px solid var(--edge);border-radius:24px;padding:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+  .chip{min-height:44px;padding:8px 14px;border-radius:16px;font:500 14px Inter,sans-serif;cursor:pointer;background:var(--glass);color:var(--text);border:1.5px solid var(--edge);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .15s}
+  .chip:hover{background:var(--glass2)}
+  .chip[aria-pressed="true"]{background:var(--lav-soft);color:var(--lav);border-color:var(--lav)}
+  .chip small{color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.04em}
+  .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .scroller{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+  .scroller .chip{flex:0 0 auto}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:20px;background:var(--lav);color:var(--lav-ink);font:700 15px Inter,sans-serif;border:none;cursor:pointer;width:100%;padding:0 18px;box-shadow:0 10px 30px rgba(170,150,255,.28);transition:transform .1s}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:var(--glass);color:var(--text);border:1px solid var(--edge);box-shadow:none}
+  .btn.sm{min-height:44px;font-size:14px;border-radius:16px;width:auto}
+  .btn:disabled{background:rgba(255,255,255,.08);color:#8C8AAE;cursor:not-allowed;box-shadow:none}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--lav-soft);color:var(--lav);font-weight:700;font-size:13px}
+  .tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(155,232,200,.14);color:var(--mint)}
+  .meter{height:6px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+  .meter span{display:block;height:100%;border-radius:99px}
+  .tabs{position:absolute;left:12px;right:12px;bottom:14px;display:flex;background:rgba(22,20,48,.78);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--edge);border-radius:28px;padding:6px;z-index:5}
+  .tabs button{flex:1;background:none;border:none;color:var(--muted);font:600 10.5px Inter,sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0;min-height:54px;cursor:pointer;border-radius:22px}
+  .tabs button[aria-current="page"]{color:var(--lav-ink);background:var(--lav)}
+  .toast{position:absolute;left:20px;right:20px;bottom:100px;background:#F4F2FF;color:#17123A;border-radius:18px;padding:13px 16px;font-weight:600;font-size:14px;display:flex;gap:8px;align-items:center;box-shadow:0 16px 40px rgba(0,0,0,.45);z-index:6}
+  .weather{width:46px;height:46px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .list{display:flex;flex-direction:column;gap:10px}
+  .item-title{font-weight:600;font-size:15px}
+  .small{font-size:13px}
+  .big{font-family:Unbounded,sans-serif;font-size:46px;font-weight:600;line-height:1;letter-spacing:-.02em}
+  .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#17123A;flex:0 0 auto}
+  .map{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--edge);background:#121131;aspect-ratio:350/400}
+  .map svg{position:absolute;inset:0;width:100%;height:100%}
+  .dot{position:absolute;transform:translate(-50%,-50%);transition:left 1.8s ease-in-out,top 1.8s ease-in-out;display:flex;flex-direction:column;align-items:center;gap:3px;z-index:2}
+  .dot .avatar{width:32px;height:32px;font-size:12px;border:2.5px solid #121131;box-shadow:0 0 0 3px rgba(255,255,255,.18)}
+  .dot span{font-size:10px;font-weight:700;background:rgba(10,10,30,.75);padding:2px 6px;border-radius:99px}
+  .me .avatar{background:var(--lav)}
+  .me::before{content:"";position:absolute;top:16px;left:50%;width:32px;height:32px;margin:-16px 0 0 -16px;border-radius:50%;background:var(--lav);opacity:.5;animation:pulse 2s infinite}
+  @keyframes pulse{0%{transform:scale(1);opacity:.5}100%{transform:scale(2.6);opacity:0}}
+  .switch{width:50px;height:30px;border-radius:99px;border:none;background:rgba(255,255,255,.14);position:relative;cursor:pointer;flex:0 0 auto}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .15s}
+  .switch[aria-checked="true"]{background:var(--mint)}
+  .switch[aria-checked="true"]::after{left:23px}
+  input.field{flex:1;min-width:0;min-height:48px;border-radius:16px;border:1px solid var(--edge);background:rgba(255,255,255,.06);color:var(--text);padding:0 14px;font:500 15px Inter,sans-serif}
+  input.field::placeholder{color:#8C8AAE}
+  .qty{width:36px;height:36px;border-radius:12px;border:1px solid var(--edge);background:var(--glass);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .qty.add{background:var(--lav);color:var(--lav-ink);border:none}
+  .orderbar{position:absolute;left:12px;right:12px;bottom:92px;z-index:4}
+  .mapframe{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--edge);background:#DCD7E9;box-shadow:0 14px 40px rgba(0,0,0,.35)}
+  .mapscroll{aspect-ratio:600/520;overflow:auto;scrollbar-width:none;cursor:grab}
+  .mapscroll::-webkit-scrollbar{display:none}
+  .mapcanvas{position:relative;aspect-ratio:600/520}
+  .mapcanvas svg{position:absolute;inset:0;width:100%;height:100%}
+  .mapcanvas .mk{width:30px;height:30px;border-width:2.5px}
+  .mk.static{position:static;transform:none;width:26px;height:26px;cursor:default;box-shadow:none;flex:0 0 auto;font-size:8px}
+  .mk.static:hover{transform:none}
+  .zoom{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px;z-index:6}
+  .zoom button{width:40px;height:40px;border-radius:13px;background:rgba(22,20,48,.88);color:#fff;border:1px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .zoom button:disabled{opacity:.4;cursor:default}
+  .nowtag{position:absolute;left:10px;top:10px;z-index:6;display:flex;align-items:center;gap:6px;background:rgba(22,20,48,.88);color:#fff;font:700 11px Inter,sans-serif;padding:7px 10px;border-radius:99px}
+  .legendcard summary{list-style:none;cursor:pointer;min-height:24px}
+  .legendcard summary::-webkit-details-marker{display:none}
+  .dot.small .avatar{width:24px;height:24px;font-size:9px;border-width:2px}
+  .dot.small span{font-size:9px}
+  .mk{position:absolute;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:#1B1A3A;border:2.5px solid var(--c);color:var(--c);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;box-shadow:0 4px 14px rgba(0,0,0,.45);padding:0;font:800 10px Inter,sans-serif;transition:transform .15s,opacity .15s}
+  .mk:hover{transform:translate(-50%,-50%) scale(1.08)}
+  .mk[aria-pressed="true"]{background:var(--c);color:#17123A;transform:translate(-50%,-50%) scale(1.18);z-index:4;box-shadow:0 0 0 6px rgba(255,255,255,.12),0 6px 18px rgba(0,0,0,.5)}
+  .mk.dim{opacity:.22}
+  .mklabel{position:absolute;transform:translate(-50%,-100%);margin-top:-26px;background:#F4F2FF;color:#17123A;font:700 11px Inter,sans-serif;padding:4px 9px;border-radius:99px;white-space:nowrap;z-index:5;pointer-events:none}
+  .lm{position:absolute;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:rgba(27,26,58,.85);border:1.5px solid rgba(255,255,255,.25);color:#ABA9CB;display:flex;align-items:center;justify-content:center;font:800 7px Inter,sans-serif;z-index:1}
+  .legend{display:flex;gap:14px;flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  button:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+  @media (max-width:440px){body{padding:0}.side{display:none}.phone{width:100vw;height:100vh;border-radius:0;border:none}}
+</style>
+</head>
+<body>
+<aside class="side" aria-label="Prototype guide">
+  <h1>NUBO<br><span style="font-size:15px;font-weight:500;color:var(--muted)">Festival app prototype</span></h1>
+  <p>Click through it like a real phone app. Your language and currency choices carry across every screen. All numbers, prices, names and places are sample data.</p>
+  <ol id="jump"></ol>
+</aside>
+<main class="phone" aria-label="NUBO app preview">
+  <div class="stars" aria-hidden="true"></div>
+  <div id="app" style="display:contents"></div>
+</main>
+
+<script>
+const I = {
+  cloud:'<path d="M7 18h10a4 4 0 0 0 0-8 6 6 0 0 0-11.3 2A3 3 0 0 0 7 18z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  storm:'<path d="M7 15h10a4 4 0 0 0 0-8 6 6 0 0 0-11.3 2A3 3 0 0 0 7 15z"/><path d="M12 15l-2 4h4l-2 4"/>',
+  food:'<path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 0-3 2-3 5v4h3v9"/>',
+  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+  moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  pin:'<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  share:'<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/>',
+  people:'<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.9.3 5 2.6 5 5.8"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',
+  chev:'<path d="M9 5l7 7-7 7"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  bag:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  glass:'<path d="M6 3h12l-1.2 7.5a4.9 4.9 0 0 1-9.6 0z"/><path d="M12 15.5V21M8 21h8"/>',
+  lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  door:'<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="14.5" cy="12" r="1"/>',
+  home:'<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
+  aid:'<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/>',
+  walk:'<circle cx="13" cy="4.5" r="1.8"/><path d="M10 21l2-6 3 3v3M8 12l2-4 4 1 2 3M12 15l-1-4"/>'
+};
+const svg = (n, s=22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+const LOGO = (s=44) => `<svg width="${s}" height="${s}" viewBox="0 0 48 48" aria-hidden="true"><circle cx="31" cy="16" r="8" fill="#FFC78A"/><path d="M14 38h20a8 8 0 0 0 0-16 11 11 0 0 0-20.7 3.4A6.4 6.4 0 0 0 14 38z" fill="#C9BCFF"/></svg>`;
+
+/* ---------- Copy in the six languages ---------- */
+const T = {
+  en:{headline:'Know the crowd before you move.',sub:'Live queue forecasts, your friends on the map, food menus, rewards and a safe way home.',lang:'Language',country:'Country & currency',cta:'Get started',
+      tF:'Forecast',tM:'Friends',tFood:'Food',tR:'Rewards',tD:'Dawn Pack',fTitle:'Crowd Weather',fSub:'Built from fan reports and the set times.',at:'At',report:'Report a queue',thanks:'Thanks! +10 points',
+      mTitle:'Your crew',mSub:'See where your friends are, live, all night.',add:'Add',namePh:'Friend’s name or phone',invite:'Invite with a link',shareLoc:'Share my location',
+      foodTitle:'Food trucks',queueNow:'Queue',seeMenu:'See menu',order:'items',placeOrder:'Pre-order & skip the queue',rTitle:'Rewards',pts:'points',redeem:'Redeem',need:'Need',earn:'How to earn',
+      dTitle:'Dawn Pack',dSub:'Walk home in a group from a lit meeting point. A pack leaves every 20 minutes.',verify:'Verify my identity',verified:'Identity verified',where:'Where are you going?',next:'Next packs',join:'Join this pack',joined:'You’re in the pack'},
+  es:{headline:'Conoce la multitud antes de moverte.',sub:'Previsión de colas en directo, tus amigos en el mapa, menús, recompensas y una vuelta segura a casa.',lang:'Idioma',country:'País y moneda',cta:'Empezar',
+      tF:'Previsión',tM:'Amigos',tFood:'Comida',tR:'Premios',tD:'Dawn Pack',fTitle:'Crowd Weather',fSub:'Basado en avisos del público y los horarios.',at:'A las',report:'Avisar de una cola',thanks:'¡Gracias! +10 puntos',
+      mTitle:'Tu grupo',mSub:'Mira dónde están tus amigos, en directo, toda la noche.',add:'Añadir',namePh:'Nombre o teléfono',invite:'Invitar con un enlace',shareLoc:'Compartir mi ubicación',
+      foodTitle:'Food trucks',queueNow:'Cola',seeMenu:'Ver menú',order:'productos',placeOrder:'Pedir y saltar la cola',rTitle:'Premios',pts:'puntos',redeem:'Canjear',need:'Faltan',earn:'Cómo ganar puntos',
+      dTitle:'Dawn Pack',dSub:'Vuelve a casa en grupo desde un punto iluminado. Sale un grupo cada 20 minutos.',verify:'Verificar mi identidad',verified:'Identidad verificada',where:'¿A dónde vas?',next:'Próximos grupos',join:'Unirme a este grupo',joined:'Estás en el grupo'},
+  ca:{headline:'Coneix la gentada abans de moure’t.',sub:'Previsió de cues en directe, els teus amics al mapa, menús, recompenses i una tornada segura a casa.',lang:'Idioma',country:'País i moneda',cta:'Començar',
+      tF:'Previsió',tM:'Amics',tFood:'Menjar',tR:'Premis',tD:'Dawn Pack',fTitle:'Crowd Weather',fSub:'Fet amb avisos del públic i els horaris.',at:'A les',report:'Avisar d’una cua',thanks:'Gràcies! +10 punts',
+      mTitle:'La teva colla',mSub:'Mira on són els teus amics, en directe, tota la nit.',add:'Afegir',namePh:'Nom o telèfon',invite:'Convidar amb un enllaç',shareLoc:'Compartir la meva ubicació',
+      foodTitle:'Food trucks',queueNow:'Cua',seeMenu:'Veure menú',order:'productes',placeOrder:'Demanar i saltar la cua',rTitle:'Premis',pts:'punts',redeem:'Bescanviar',need:'Falten',earn:'Com guanyar punts',
+      dTitle:'Dawn Pack',dSub:'Torna a casa en grup des d’un punt il·luminat. Surt un grup cada 20 minuts.',verify:'Verificar la meva identitat',verified:'Identitat verificada',where:'On vas?',next:'Propers grups',join:'Unir-me a aquest grup',joined:'Ets al grup'},
+  fr:{headline:'Connais la foule avant de bouger.',sub:'Prévisions des files en direct, tes amis sur la carte, menus, récompenses et un retour sûr.',lang:'Langue',country:'Pays et devise',cta:'Commencer',
+      tF:'Prévisions',tM:'Amis',tFood:'Manger',tR:'Récompenses',tD:'Dawn Pack',fTitle:'Crowd Weather',fSub:'Basé sur les signalements du public et les horaires.',at:'À',report:'Signaler une file',thanks:'Merci ! +10 points',
+      mTitle:'Ta bande',mSub:'Vois où sont tes amis, en direct, toute la nuit.',add:'Ajouter',namePh:'Nom ou téléphone',invite:'Inviter avec un lien',shareLoc:'Partager ma position',
+      foodTitle:'Food trucks',queueNow:'File',seeMenu:'Voir le menu',order:'articles',placeOrder:'Commander et éviter la file',rTitle:'Récompenses',pts:'points',redeem:'Échanger',need:'Encore',earn:'Comment gagner des points',
+      dTitle:'Dawn Pack',dSub:'Rentre en groupe depuis un point éclairé. Un groupe part toutes les 20 minutes.',verify:'Vérifier mon identité',verified:'Identité vérifiée',where:'Où vas-tu ?',next:'Prochains groupes',join:'Rejoindre ce groupe',joined:'Tu fais partie du groupe'},
+  it:{headline:'Conosci la folla prima di muoverti.',sub:'Previsioni delle code in tempo reale, i tuoi amici sulla mappa, menù, premi e un ritorno sicuro.',lang:'Lingua',country:'Paese e valuta',cta:'Inizia',
+      tF:'Previsioni',tM:'Amici',tFood:'Cibo',tR:'Premi',tD:'Dawn Pack',fTitle:'Crowd Weather',fSub:'Basato sulle segnalazioni del pubblico e sugli orari.',at:'Alle',report:'Segnala una coda',thanks:'Grazie! +10 punti',
+      mTitle:'Il tuo gruppo',mSub:'Guarda dove sono i tuoi amici, in diretta, tutta la notte.',add:'Aggiungi',namePh:'Nome o telefono',invite:'Invita con un link',shareLoc:'Condividi la mia posizione',
+      foodTitle:'Food truck',queueNow:'Coda',seeMenu:'Vedi menù',order:'articoli',placeOrder:'Ordina e salta la coda',rTitle:'Premi',pts:'punti',redeem:'Riscatta',need:'Mancano',earn:'Come guadagnare punti',
+      dTitle:'Dawn Pack',dSub:'Torna a casa in gruppo da un punto illuminato. Parte un gruppo ogni 20 minuti.',verify:'Verifica la mia identità',verified:'Identità verificata',where:'Dove vai?',next:'Prossimi gruppi',join:'Unisciti al gruppo',joined:'Sei nel gruppo'},
+  ru:{headline:'Узнай о толпе, прежде чем идти.',sub:'Прогноз очередей, друзья на карте, меню, награды и безопасная дорога домой.',lang:'Язык',country:'Страна и валюта',cta:'Начать',
+      tF:'Прогноз',tM:'Друзья',tFood:'Еда',tR:'Награды',tD:'Dawn Pack',fTitle:'Crowd Weather',fSub:'На основе сообщений зрителей и расписания.',at:'В',report:'Сообщить об очереди',thanks:'Спасибо! +10 баллов',
+      mTitle:'Твоя компания',mSub:'Смотри, где твои друзья, в реальном времени.',add:'Добавить',namePh:'Имя или телефон',invite:'Пригласить по ссылке',shareLoc:'Делиться геопозицией',
+      foodTitle:'Фудтраки',queueNow:'Очередь',seeMenu:'Меню',order:'шт.',placeOrder:'Заказать без очереди',rTitle:'Награды',pts:'баллов',redeem:'Получить',need:'Нужно ещё',earn:'Как заработать баллы',
+      dTitle:'Dawn Pack',dSub:'Иди домой в группе от освещённой точки сбора. Группа уходит каждые 20 минут.',verify:'Подтвердить личность',verified:'Личность подтверждена',where:'Куда ты идёшь?',next:'Ближайшие группы',join:'Присоединиться',joined:'Ты в группе'}
+};
+const LANGS=[['en','English'],['es','Español'],['ca','Català'],['fr','Français'],['it','Italiano'],['ru','Русский']];
+const COUNTRIES=[['Spain','EUR'],['France','EUR'],['Italy','EUR'],['United Kingdom','GBP'],['Switzerland','CHF'],['United States','USD']];
+const RATE={EUR:1,GBP:0.87,CHF:0.94,USD:1.16}; // sample exchange rates for the demo
+const LOCALE={en:'en-GB',es:'es-ES',ca:'ca-ES',fr:'fr-FR',it:'it-IT',ru:'ru-RU'};
+
+/* ---------- Sample data ---------- */
+const SLOTS=['22:00','23:00','00:00','01:15','02:30'];
+const PLACES=[
+  {name:'Main bar',zone:'Next to Main Stage',p:[40,80,55,35,20]},
+  {name:'Toilets North',zone:'Behind the food court',p:[30,60,75,10,15]},
+  {name:'Food trucks',zone:'Food court',p:[70,45,30,50,25]},
+  {name:'Main Stage entrance',zone:'Gate A',p:[55,85,20,15,5]},
+  {name:'Lockers',zone:'Main exit',p:[15,20,25,35,80]}
+];
+const TRUCKS=[
+  {name:'Taco Libre',kind:'Mexican street food',queue:35,color:'#FFC78A',menu:[
+    ['Mains','Two chicken tacos','Lime, coriander, pico de gallo',8.5,''],['Mains','Mushroom quesadilla','Melted cheese, salsa verde',8,'Veggie'],
+    ['Sides','Nachos with guacamole','Fresh guac, jalapeños',7,'Veggie'],['Drinks','Horchata','Cold rice & cinnamon drink',3.5,'Vegan']]},
+  {name:'Slice Club',kind:'Pizza by the slice',queue:70,color:'#FF8A9A',menu:[
+    ['Mains','Margherita slice','Tomato, mozzarella, basil',5,'Veggie'],['Mains','Pepperoni slice','Spicy pepperoni, mozzarella',6,''],
+    ['Sides','Garlic knots','Four, with dip',4,'Veggie'],['Drinks','Lemonade','Homemade, sparkling',3.5,'Vegan']]},
+  {name:'Green Bowl',kind:'Plant-based bowls',queue:15,color:'#9BE8C8',menu:[
+    ['Mains','Falafel bowl','Hummus, tabbouleh, tahini',9,'Vegan'],['Mains','Teriyaki tofu bowl','Rice, edamame, sesame',9.5,'Vegan'],
+    ['Sides','Sweet potato fries','Smoked paprika mayo',4.5,'Vegan'],['Drinks','Fresh juice','Orange, carrot, ginger',4,'Vegan']]},
+  {name:'La Crêpe',kind:'French crêpes',queue:50,color:'#C9BCFF',menu:[
+    ['Mains','Ham & cheese galette','Buckwheat, egg optional',7.5,''],['Sweet','Nutella crêpe','With banana +1',5.5,'Veggie'],
+    ['Sweet','Salted caramel crêpe','Homemade caramel',5.5,'Veggie'],['Drinks','Coffee','Espresso or latte',2.5,'Veggie']]}
+];
+const REWARDS=[
+  {id:'water',name:'Free water refill',cost:50},
+  {id:'skip',name:'Skip-the-line bar pass (15 min)',cost:150},
+  {id:'merch',name:'10% off festival merch',cost:200},
+  {id:'pit',name:'Front-pit access for one set',cost:500}
+];
+const AREAS=['Gràcia','Eixample','Poblenou','Sants','Barceloneta'];
+const PACKS={'Gràcia':[6,4,2],'Eixample':[8,5,3],'Poblenou':[3,5,1],'Sants':[4,2,2],'Barceloneta':[5,3,4]};
+const PACK_TIMES=['02:00','02:20','02:40'];
+/* ---------- The (made-up) festival map: 350 x 420 ---------- */
+/* type: gate | bar | wc | lock | food | aid | meet ; q = % chance of a queue right now (23:00) */
+const PLACES_MAP=[
+  {id:'gateA',name:'Main Stage entrance (Gate A)',type:'gate',x:360,y:318,q:85},
+  {id:'gateB',name:'Cloud Stage entrance (Gate B)',type:'gate',x:110,y:452,q:35},
+  {id:'gateC',name:'Sunset Stage entrance (Gate C)',type:'gate',x:150,y:300,q:20},
+  {id:'bar1',name:'Main bar',type:'bar',x:470,y:215,q:80},
+  {id:'bar2',name:'Cloud bar',type:'bar',x:230,y:405,q:40},
+  {id:'bar3',name:'Beach bar',type:'bar',x:245,y:225,q:55},
+  {id:'wcN',name:'Toilets North',type:'wc',x:545,y:150,q:60},
+  {id:'wcW',name:'Toilets West',type:'wc',x:45,y:340,q:25},
+  {id:'wcS',name:'Toilets South',type:'wc',x:370,y:470,q:30},
+  {id:'lock',name:'Lockers',type:'lock',x:500,y:470,q:20},
+  {id:'t0',name:'Taco Libre',type:'food',x:430,y:365,q:35,truck:0},
+  {id:'t1',name:'Slice Club',type:'food',x:490,y:350,q:70,truck:1},
+  {id:'t2',name:'Green Bowl',type:'food',x:450,y:420,q:15,truck:2},
+  {id:'t3',name:'La Crêpe',type:'food',x:510,y:410,q:50,truck:3},
+  {id:'aid',name:'First aid tent',type:'aid',x:270,y:340,q:null},
+  {id:'meet',name:'Dawn Pack meeting point B',type:'meet',x:200,y:490,q:null}
+];
+const TYPE={gate:{icon:'door',label:'Entrance'},bar:{icon:'glass',label:'Bar'},wc:{icon:'WC',label:'Toilets'},lock:{icon:'lock',label:'Lockers'},
+  food:{icon:'food',label:'Food truck'},aid:{icon:'aid',label:'First aid'},meet:{icon:'moon',label:'Meeting point'}};
+const FILTERS={
+  en:[['all','All'],['wc','Toilets'],['bar','Bars'],['food','Food'],['gate','Entrances'],['lock','Lockers']],
+  es:[['all','Todo'],['wc','Baños'],['bar','Barras'],['food','Comida'],['gate','Entradas'],['lock','Taquillas']],
+  ca:[['all','Tot'],['wc','Lavabos'],['bar','Barres'],['food','Menjar'],['gate','Entrades'],['lock','Taquilles']],
+  fr:[['all','Tout'],['wc','Toilettes'],['bar','Bars'],['food','Manger'],['gate','Entrées'],['lock','Casiers']],
+  it:[['all','Tutto'],['wc','Bagni'],['bar','Bar'],['food','Cibo'],['gate','Ingressi'],['lock','Armadietti']],
+  ru:[['all','Все'],['wc','Туалеты'],['bar','Бары'],['food','Еда'],['gate','Входы'],['lock','Камеры']]
+};
+const HOME_T={en:['Home','Tap a place on the map'],es:['Inicio','Toca un lugar del mapa'],ca:['Inici','Toca un lloc del mapa'],fr:['Accueil','Touche un lieu sur la carte'],it:['Home','Tocca un luogo sulla mappa'],ru:['Главная','Нажми на место на карте']};
+const FRIEND_COLORS=['#FFC78A','#8FD3FF','#9BE8C8','#FF8A9A','#F5E27A','#B9F0FF'];
+
+/* ---------- State ---------- */
+const S={screen:'welcome',lang:'en',country:'Spain',slot:1,points:240,reported:{},redeemed:{},verified:false,area:'Gràcia',pack:1,joined:false,toast:'',
+  truck:null,cart:{},shareLoc:true,filter:'all',sel:null,
+  me:{x:330,y:285},zoom:0,
+  friends:[{name:'Lucía',x:390,y:280},{name:'Marco',x:470,y:395},{name:'Inès',x:130,y:330}]};
+S.friends.forEach((f,i)=>{f.color=FRIEND_COLORS[i];f.tx=f.x;f.ty=f.y;});
+const set=(o)=>{Object.assign(S,o);render();};
+const t=()=>T[S.lang];
+const code=()=>COUNTRIES.find(c=>c[0]===S.country)[1];
+const money=(eur)=>new Intl.NumberFormat(LOCALE[S.lang],{style:'currency',currency:code()}).format(eur*RATE[code()]);
+const tint=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16},${(n>>8)&255},${n&255},${a})`;};
+const level=(p)=>p<35?{c:'#8FD3FF',icon:'sun',w:{en:'Clear',es:'Despejado',ca:'Clar',fr:'Dégagé',it:'Sereno',ru:'Ясно'}}
+  :p<65?{c:'#FFC78A',icon:'cloud',w:{en:'Cloudy',es:'Nublado',ca:'Ennuvolat',fr:'Nuageux',it:'Nuvoloso',ru:'Облачно'}}
+  :{c:'#FF8A9A',icon:'storm',w:{en:'Stormy',es:'Tormenta',ca:'Tempesta',fr:'Orageux',it:'Tempesta',ru:'Гроза'}};
+const near=(x,y)=>PLACES_MAP.reduce((b,s)=>{const d=(s.x-x)**2+(s.y-y)**2;return d<b.d?{d,n:s.name.replace(/ \(.*\)/,'')}:b;},{d:1e9}).n;
+const walk=(p)=>Math.max(1,Math.round(Math.hypot(p.x-S.me.x,p.y-S.me.y)/55));
+const pct=(v,m)=>(v/m*100).toFixed(2)+'%';
+const mkIcon=(type,s)=>TYPE[type].icon==='WC'?'WC':svg(TYPE[type].icon,s);
+/* ---------- Maps (made-up festival site, 600 x 520 design units) ---------- */
+const seaY=x=>260-x*0.3667;
+const landMinY=x=>288-(x-12)*0.368+14;
+function block(x,y,w,h,d,label,accent){
+  return `<g><polygon points="${x},${y} ${x+d},${y-d} ${x+w+d},${y-d} ${x+w},${y}" fill="#3A3658"/>
+  <polygon points="${x+w},${y} ${x+w+d},${y-d} ${x+w+d},${y+h-d} ${x+w},${y+h}" fill="#0F0E1C"/>
+  <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#1C1B2E"/>
+  <rect x="${x+6}" y="${y+h-7}" width="${w-12}" height="3" rx="1.5" fill="${accent}"/>
+  <text x="${x+w/2}" y="${y+h/2+2}" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="10" letter-spacing=".6" fill="#fff">${label}</text></g>`;
+}
+const tree=(x,y,r=7)=>`<circle cx="${x+2}" cy="${y+2.5}" r="${r}" fill="#2C7A50"/><circle cx="${x}" cy="${y}" r="${r}" fill="#47B07A"/><circle cx="${x-2.2}" cy="${y-2.2}" r="${(r*.38).toFixed(1)}" fill="#7AD3A2"/>`;
+const tag=(x,y,text,bg='#1C1B2E',fg='#fff')=>{const w=text.length*6.4+16;return `<rect x="${x-w/2}" y="${y-9}" width="${w}" height="18" rx="5" fill="${bg}"/><text x="${x}" y="${y+3.4}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="9" letter-spacing="1" fill="${fg}">${text}</text>`;};
+const WALKS=['M565 500 L470 488 L370 470','M470 488 L470 385','M370 470 L330 360','M330 360 L360 318','M330 360 L270 340 L150 300 L45 340','M330 360 L230 405 L110 452',
+  'M230 405 L200 490 L290 505','M470 385 L470 215 L545 150','M150 300 L245 225','M470 215 L430 300 L360 318'];
+const TREES=[[40,318],[58,312],[76,306],[26,360],[30,392],[24,425],[40,498],[64,500],[150,350],[168,344],[186,338],[262,470],[280,480],[298,488],
+  [200,330],[214,270],[500,250],[518,240],[560,240],[578,258],[566,290],[548,306],[520,300],[506,272],[580,330],[585,420],[575,445],[420,165],[400,180],[578,140],[230,470],[330,420],[312,432]];
+function seaAndGround(){
+  return `<defs><linearGradient id="sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4E7FE6"/><stop offset="1" stop-color="#8CBDFF"/></linearGradient></defs>
+  <rect width="600" height="520" fill="#DCD7E9"/>
+  <polygon points="0,0 600,0 600,40 0,260" fill="url(#sea)"/>
+  <polygon points="0,260 600,40 600,62 0,282" fill="#F4E3BE"/>
+  <polygon points="12,288 590,76 590,508 12,508" fill="#F3F0F8" stroke="#ABA3C8" stroke-width="2" stroke-dasharray="6 5"/>`;
+}
+function detailMap(){
+  const waves=[[60,60],[180,40],[300,30],[110,140],[240,110],[420,40],[40,200],[360,80]].map(([x,y])=>`<path d="M${x} ${y} q6 -5 12 0 t12 0" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>`).join('');
+  return `<svg viewBox="0 0 600 520" aria-hidden="true">${seaAndGround()}${waves}
+    <g transform="translate(470 70)"><path d="M0 0 h26 l-5 7 h-16z" fill="#fff"/><path d="M13 -2 v-22 l12 20z" fill="#fff"/><path d="M11 -2 v-16 l-9 14z" fill="#F7D3E3"/></g>
+    <g transform="translate(560 26)"><circle r="13" fill="rgba(255,255,255,.25)"/><path d="M0 -8 l5 12 -5 -3 -5 3z" fill="#fff"/><text y="-15" text-anchor="middle" font-family="Inter" font-weight="800" font-size="8" fill="#fff">N</text></g>
+    <polygon points="292,240 430,240 455,318 268,318" fill="#F7D3E3"/>
+    <polygon points="48,424 178,424 194,482 36,482" fill="#DDD3F7"/>
+    <polygon points="98,278 206,278 226,322 86,322" fill="#FBE1C9"/>
+    <rect x="398" y="330" width="146" height="122" rx="22" fill="#FFE3C7" stroke="#F3C99E"/>
+    <ellipse cx="540" cy="270" rx="46" ry="56" fill="#D3F0DD"/>
+    <rect x="480" y="160" width="50" height="28" rx="6" fill="#FFE58A" stroke="#E7C94C"/>
+    <g fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">${WALKS.map(d=>`<path d="${d}"/>`).join('')}</g>
+    <g fill="none" stroke="#E2DCF0" stroke-width="1.5" stroke-dasharray="3 5">${WALKS.map(d=>`<path d="${d}"/>`).join('')}</g>
+    ${TREES.map(([x,y])=>tree(x,y)).join('')}
+    ${[[430,365,'#FF8AB3'],[490,350,'#8FD3FF'],[450,420,'#9BE8C8'],[510,410,'#C9BCFF']].map(([x,y,c])=>`<rect x="${x-16}" y="${y+10}" width="32" height="12" rx="3" fill="${c}" opacity=".55"/>`).join('')}
+    ${block(300,190,120,42,14,'MAIN STAGE','#FF8AB3')}
+    ${block(58,384,102,38,12,'CLOUD STAGE','#8FD3FF')}
+    ${block(104,240,92,32,10,'SUNSET STAGE','#FFC78A')}
+    ${tag(471,330,'FOOD COURT')}${tag(540,212,'CHILL GARDEN','#2C7A50')}${tag(505,174,'VIP','#1C1B2E','#FFE58A')}${tag(300,140,'BEACH','#E9B44C','#1C1B2E')}
+    ${tag(362,262,'MAIN PLAZA','#E85C9A')}
+    <g>${tag(538,500,'ENTRANCE →','#1C1B2E','#9BE8C8')}</g>
+    <g>${tag(290,505,'← EXIT','#2BB673','#fff')}</g>
+  </svg>`;
+}
+function simpleMap(){
+  return `<svg viewBox="0 0 600 520" aria-hidden="true">${seaAndGround()}
+    <g fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round">${WALKS.map(d=>`<path d="${d}"/>`).join('')}</g>
+    <rect x="300" y="190" width="120" height="42" rx="8" fill="#1C1B2E"/><text x="360" y="215" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="11" fill="#fff">MAIN STAGE</text>
+    <rect x="58" y="384" width="102" height="38" rx="8" fill="#1C1B2E"/><text x="109" y="407" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="10" fill="#fff">CLOUD STAGE</text>
+    <rect x="104" y="240" width="92" height="32" rx="8" fill="#1C1B2E"/><text x="150" y="260" text-anchor="middle" font-family="Unbounded" font-weight="700" font-size="9" fill="#fff">SUNSET STAGE</text>
+    <rect x="398" y="330" width="146" height="122" rx="22" fill="#FFE3C7"/><text x="471" y="395" text-anchor="middle" font-family="Inter" font-weight="800" font-size="11" letter-spacing="1" fill="#B9763A">FOOD COURT</text>
+    <ellipse cx="540" cy="270" rx="46" ry="56" fill="#D3F0DD"/><text x="540" y="274" text-anchor="middle" font-family="Inter" font-weight="800" font-size="10" letter-spacing="1" fill="#2C7A50">CHILL</text>
+    <text x="290" y="512" text-anchor="middle" font-family="Inter" font-weight="800" font-size="10" fill="#2BB673">EXIT</text>
+    <text x="555" y="498" text-anchor="middle" font-family="Inter" font-weight="800" font-size="10" fill="#1C1B2E">ENTRANCE</text>
+  </svg>`;
+}
+function friendDots(cls){
+  return S.friends.map((f,i)=>`<div class="dot ${cls||''}" id="f${i}" style="left:${pct(f.x,600)};top:${pct(f.y,520)}"><div class="avatar" style="background:${f.color}">${initials(f.name)}</div><span>${esc(f.name)}</span></div>`).join('')
+    +(S.shareLoc?`<div class="dot me ${cls||''}" style="left:${pct(S.me.x,600)};top:${pct(S.me.y,520)}"><div class="avatar">You</div></div>`:'');
+}
+const initials=(n)=>n.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const esc=(s)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastTimer;
+const toast=(msg)=>{clearTimeout(toastTimer);set({toast:msg});toastTimer=setTimeout(()=>set({toast:''}),2000);};
+
+/* ---------- Screens ---------- */
+function welcome(){
+  const x=t();
+  return `<div class="screen" style="padding-top:48px;padding-bottom:30px;gap:24px">
+    <div class="row" style="gap:12px">${LOGO(48)}<span style="font-family:Unbounded;font-weight:700;font-size:26px;letter-spacing:.04em">NUBO</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px"><h2 class="title" style="font-size:32px">${x.headline}</h2><p class="muted" style="margin:0;line-height:1.55;font-size:15px">${x.sub}</p></div>
+    <section style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">${x.lang}</p>
+      <div class="grid3">${LANGS.map(([c,l])=>`<button class="chip" aria-pressed="${S.lang===c}" onclick="set({lang:'${c}'})">${l}</button>`).join('')}</div></section>
+    <section style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">${x.country}</p>
+      <div class="grid2">${COUNTRIES.map(([n,c])=>`<button class="chip" aria-pressed="${S.country===n}" onclick="set({country:'${n}'})">${n}<small>${c}</small></button>`).join('')}</div></section>
+    <div style="flex:1"></div>
+    <button class="btn" onclick="set({screen:'home'})">${x.cta}</button>
+  </div>`;
+}
+function header(title, sub){
+  return `<div style="display:flex;flex-direction:column;gap:8px">
+    <div class="row between"><div class="row" style="gap:8px">${LOGO(26)}<span style="font-family:Unbounded;font-weight:700;font-size:13px;letter-spacing:.08em;color:var(--muted)">NUBO</span></div><span class="pill">${svg('star',15)} ${S.points}</span></div>
+    <h2 class="title" style="margin-top:6px">${title}</h2>
+    ${sub?`<p class="muted small" style="margin:0;line-height:1.5">${sub}</p>`:''}</div>`;
+}
+function forecast(){
+  const x=t(), i=S.slot;
+  const sorted=[...PLACES].sort((a,b)=>b.p[i]-a.p[i]);
+  const top=sorted[0], best=sorted[sorted.length-1];
+  const L=level(top.p[i]);
+  return `<div class="screen">
+    ${header(x.fTitle,x.fSub)}
+    <div class="scroller" role="group" aria-label="Time">${SLOTS.map((s,k)=>`<button class="chip" aria-pressed="${k===i}" onclick="set({slot:${k}})">${s}</button>`).join('')}</div>
+    <div class="card" style="padding:20px;background:linear-gradient(140deg,${tint(L.c,.22)},rgba(255,255,255,.04));border-color:${tint(L.c,.35)}">
+      <div class="row between"><p class="eyebrow">${x.at} ${SLOTS[i]}</p><span style="color:${L.c}">${svg(L.icon,30)}</span></div>
+      <div class="row" style="margin-top:6px;align-items:flex-end;gap:12px"><span class="big" style="color:${L.c}">${top.p[i]}%</span>
+        <span class="small" style="padding-bottom:6px;line-height:1.4">chance of a queue at<br><b>${top.name}</b></span></div>
+      <p class="small" style="margin:14px 0 0;color:var(--muted)">Best bet right now: <b style="color:var(--sky)">${best.name}</b> · ${best.p[i]}%</p>
+    </div>
+    <div class="list">${PLACES.map((pl,k)=>{const v=pl.p[i],l=level(v),done=S.reported[k+'-'+i];return `
+      <div class="card" style="padding:14px;display:flex;flex-direction:column;gap:12px">
+        <div class="row"><div class="weather" style="background:${tint(l.c,.14)};color:${l.c}">${svg(l.icon,24)}</div>
+          <div style="flex:1;min-width:0"><div class="item-title">${pl.name}</div><div class="small muted">${pl.zone}</div></div>
+          <div style="text-align:right"><div class="item-title" style="color:${l.c}">${v}%</div><div class="small muted">${l.w[S.lang]} · ~${Math.round(v/5)} min</div></div></div>
+        <div class="meter" aria-hidden="true"><span style="width:${v}%;background:${l.c}"></span></div>
+        <button class="btn ghost sm" style="width:100%" ${done?'disabled':''} onclick="report(${k})">${done?svg('check',18)+' Reported':svg('plus',18)+' '+x.report+' · +10'}</button>
+      </div>`}).join('')}</div>
+  </div>`;
+}
+function report(k){S.reported[k+'-'+S.slot]=true;S.points+=10;toast(t().thanks);}
+
+function friends(){
+  const x=t();
+  return `<div class="screen">
+    ${header(x.mTitle,x.mSub)}
+    <div class="map" style="aspect-ratio:600/520;background:#DCD7E9" role="img" aria-label="Simple festival map with your friends' live locations">${simpleMap()}${friendDots()}</div>
+    <form class="row" onsubmit="addFriend(event)" style="gap:8px">
+      <label for="fname" class="sr">${x.namePh}</label>
+      <input id="fname" class="field" placeholder="${x.namePh}" autocomplete="off">
+      <button class="btn sm" type="submit">${svg('plus',18)} ${x.add}</button>
+    </form>
+    <div class="list">${S.friends.map((f,i)=>`
+      <div class="card row" style="padding:12px 14px">
+        <div class="avatar" style="background:${f.color}">${initials(f.name)}</div>
+        <div style="flex:1;min-width:0"><div class="item-title">${esc(f.name)}</div><div class="small muted" id="near${i}">Near ${near(f.x,f.y)} · live</div></div>
+        <button class="qty" aria-label="Remove ${esc(f.name)}" onclick="removeFriend(${i})">${svg('x',16)}</button>
+      </div>`).join('')}</div>
+    <div class="card row between" style="padding:14px 16px">
+      <div><div class="item-title">${x.shareLoc}</div><div class="small muted">Only the people in your crew can see it.</div></div>
+      <button class="switch" role="switch" aria-checked="${S.shareLoc}" aria-label="${x.shareLoc}" onclick="set({shareLoc:!S.shareLoc})"></button>
+    </div>
+    <button class="btn ghost" onclick="copyInvite()">${svg('link',18)} ${x.invite}</button>
+  </div>`;
+}
+function addFriend(e){
+  e.preventDefault();
+  const v=document.getElementById('fname').value.trim(); if(!v) return;
+  const s=PLACES_MAP[Math.floor(Math.random()*PLACES_MAP.length)];
+  const f={name:v.slice(0,20),x:s.x+14,y:s.y+14,color:FRIEND_COLORS[S.friends.length%FRIEND_COLORS.length]};f.tx=f.x;f.ty=f.y;
+  S.friends.push(f); toast(f.name+' added to your crew');
+}
+function removeFriend(i){S.friends.splice(i,1);render();}
+function copyInvite(){try{navigator.clipboard.writeText('https://nubo.app/join/CREW-7K2Q').catch(()=>{});}catch(e){} toast('Invite link copied');}
+/* live movement of friends on the map */
+setInterval(()=>{
+  S.friends.forEach((f,i)=>{
+    if(Math.random()<.25){const s=PLACES_MAP[Math.floor(Math.random()*PLACES_MAP.length)];f.tx=s.x+(Math.random()*36-18);f.ty=s.y+(Math.random()*36-18);}
+    f.x+= (f.tx-f.x)*.35 + (Math.random()*8-4); f.y+= (f.ty-f.y)*.35 + (Math.random()*8-4);
+    f.x=Math.max(40,Math.min(570,f.x)); f.y=Math.max(landMinY(f.x),Math.min(495,f.y));
+    const el=document.getElementById('f'+i); if(el){el.style.left=pct(f.x,600);el.style.top=pct(f.y,520);}
+    const nl=document.getElementById('near'+i); if(nl) nl.textContent='Near '+near(f.x,f.y)+' · live';
+  });
+},2000);
+
+function placeColor(p){return p.q==null?(p.type==='aid'?'#9BE8C8':'#C9BCFF'):level(p.q).c;}
+function home(){
+  const x=t();
+  if(S.truck!==null) return truckMenu();
+  const marks=PLACES_MAP.map(p=>{
+    const on=S.filter==='all'||p.type===S.filter, sel=S.sel===p.id;
+    return `<button class="mk ${on?'':'dim'}" aria-pressed="${sel}" aria-label="${p.name}${p.q!=null?', '+p.q+'% chance of a queue':''}" onclick="selectPlace('${p.id}')" style="left:${pct(p.x,600)};top:${pct(p.y,520)};--c:${placeColor(p)}">${mkIcon(p.type,17)}</button>`;
+  }).join('');
+  const selP=PLACES_MAP.find(p=>p.id===S.sel);
+  const label=selP?`<div class="mklabel" style="left:${pct(selP.x,600)};top:${pct(selP.y,520)}">${selP.name.replace(/ \(.*\)/,'')}</div>`:'';
+  return `<div class="screen">
+    ${header(HOME_T[S.lang][0], 'Now · 23:00 · '+HOME_T[S.lang][1])}
+    <div class="scroller" role="group" aria-label="Filter the map">${FILTERS[S.lang].map(([k,l])=>`<button class="chip" aria-pressed="${S.filter===k}" onclick="set({filter:'${k}',sel:null})">${l}</button>`).join('')}</div>
+    <div class="mapframe">
+      <div class="mapscroll" id="mapscroll" onpointerdown="mapDown(event)">
+        <div class="mapcanvas" style="width:${ZOOMS[S.zoom]*100}%">${detailMap()}${friendDots('small')}${marks}${label}</div>
+      </div>
+      <div class="zoom"><button aria-label="Zoom in" onclick="zoomMap(1)" ${S.zoom===ZOOMS.length-1?'disabled':''}>${svg('plus',18)}</button><button aria-label="Zoom out" onclick="zoomMap(-1)" ${S.zoom===0?'disabled':''}>${svg('minus',18)}</button></div>
+      <div class="nowtag">${svg('cloud',14)} Live · 23:00</div>
+    </div>
+    ${placeCard(selP)}
+    <details class="card legendcard"><summary class="row between"><span class="eyebrow">Map legend</span>${svg('chev',16)}</summary>
+      <div class="grid2" style="margin-top:12px">${Object.entries(TYPE).map(([k,v])=>`<div class="row small" style="gap:8px"><span class="mk static" style="--c:#C9BCFF">${mkIcon(k,14)}</span>${v.label}</div>`).join('')}</div>
+      <div class="legend" style="margin-top:12px"><span><i style="background:#8FD3FF"></i>Clear</span><span><i style="background:#FFC78A"></i>Cloudy</span><span><i style="background:#FF8A9A"></i>Stormy (long queue)</span></div>
+    </details>
+    <div class="row between" style="margin-top:6px"><h3 style="margin:0;font-family:Unbounded;font-weight:600;font-size:18px">${x.foodTitle}</h3><span class="small muted">Prices in ${code()}</span></div>
+    <div class="list">${TRUCKS.map((tr,k)=>{const l=level(tr.queue);return `
+      <button onclick="set({truck:${k}})" class="card" style="text-align:left;color:inherit;font:inherit;cursor:pointer;display:flex;gap:14px;align-items:center;padding:14px;width:100%">
+        <div class="weather" style="width:56px;height:56px;border-radius:18px;background:${tint(tr.color,.18)};color:${tr.color}">${svg('food',26)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="item-title" style="font-size:16px">${tr.name}</div>
+          <div class="small muted">${tr.kind}</div>
+          <div class="row small" style="gap:6px;margin-top:6px;color:${l.c}">${svg(l.icon,16)} ${x.queueNow} ~${Math.round(tr.queue/5)} min · from ${money(Math.min(...tr.menu.map(m=>m[3])))}</div>
+        </div>
+        <span class="muted">${svg('chev',20)}</span>
+      </button>`}).join('')}</div>
+  </div>`;
+}
+function selectPlace(id){set({sel:S.sel===id?null:id});}
+const ZOOMS=[1,1.6,2.3];
+function zoomMap(d){
+  const m=document.getElementById('mapscroll'); const cx=(m.scrollLeft+m.clientWidth/2)/m.scrollWidth, cy=(m.scrollTop+m.clientHeight/2)/m.scrollHeight;
+  S.zoom=Math.max(0,Math.min(ZOOMS.length-1,S.zoom+d)); render();
+  const n=document.getElementById('mapscroll'); n.scrollLeft=cx*n.scrollWidth-n.clientWidth/2; n.scrollTop=cy*n.scrollHeight-n.clientHeight/2;
+}
+let drag=null;
+function mapDown(e){ if(e.pointerType!=='mouse'||e.target.closest('button')) return; const m=e.currentTarget; drag={m,x:e.clientX,y:e.clientY,l:m.scrollLeft,t:m.scrollTop}; m.style.cursor='grabbing'; e.preventDefault(); }
+if(typeof window!=='undefined'&&window.addEventListener){
+  window.addEventListener('pointermove',e=>{ if(!drag) return; drag.m.scrollLeft=drag.l-(e.clientX-drag.x); drag.m.scrollTop=drag.t-(e.clientY-drag.y); });
+  window.addEventListener('pointerup',()=>{ if(drag){ drag.m.style.cursor=''; drag=null; } });
+}
+function placeCard(p){
+  if(!p) return `<div class="card row small muted" style="gap:12px">${svg('pin',22)}<span>Tap a marker to see the queue, how far it is and what to do there. Colours follow Crowd Weather.</span></div>`;
+  const c=placeColor(p), l=p.q!=null?level(p.q):null;
+  const alt=p.q!=null?PLACES_MAP.filter(o=>o.type===p.type&&o.id!==p.id&&o.q<p.q-15).sort((a,b)=>a.q-b.q)[0]:null;
+  const done=S.reported['map-'+p.id];
+  let actions='';
+  if(p.type==='food') actions+=`<button class="btn" onclick="set({truck:${p.truck}})">${svg('food',18)} ${t().seeMenu}</button>`;
+  if(p.type==='meet') actions+=`<button class="btn" onclick="set({screen:'dawn'})">${svg('moon',18)} Open Dawn Pack</button>`;
+  if(p.q!=null) actions+=`<button class="btn ghost sm" style="width:100%" ${done?'disabled':''} onclick="S.reported['map-${p.id}']=true;S.points+=10;toast(t().thanks)">${done?svg('check',18)+' Reported':svg('plus',18)+' '+t().report+' · +10'}</button>`;
+  const info={aid:'Open all night. Free water, medics and a quiet space.',meet:'Lit and staffed. A Dawn Pack leaves from here every 20 minutes.'}[p.type]||'';
+  return `<div class="card" style="display:flex;flex-direction:column;gap:14px;padding:18px;background:linear-gradient(140deg,${tint(c,.18)},rgba(255,255,255,.04));border-color:${tint(c,.4)}">
+    <div class="row" style="gap:12px">
+      <div class="weather" style="background:${tint(c,.18)};color:${c};font:800 13px Inter">${mkIcon(p.type,24)}</div>
+      <div style="flex:1;min-width:0"><div class="item-title" style="font-size:16px">${p.name}</div>
+        <div class="small muted row" style="gap:4px">${TYPE[p.type].label} · ${svg('walk',14)} ${walk(p)} min walk</div></div>
+      <button class="qty" aria-label="Close" onclick="set({sel:null})">${svg('x',16)}</button>
+    </div>
+    ${l?`<div class="row" style="gap:12px"><span style="color:${l.c}">${svg(l.icon,28)}</span>
+      <div><div class="item-title" style="color:${l.c}">${p.q}% chance of a queue</div><div class="small muted">${l.w[S.lang]} · ~${Math.round(p.q/5)} min wait</div></div></div>`:''}
+    ${info?`<p class="small muted" style="margin:0;line-height:1.5">${info}</p>`:''}
+    ${alt?`<button class="chip" style="flex-direction:row;justify-content:flex-start;gap:8px;text-align:left;border-color:${tint('#8FD3FF',.5)}" onclick="selectPlace('${alt.id}')"><span style="color:#8FD3FF">${svg('sun',18)}</span><span class="small"><b>${alt.name.replace(/ \(.*\)/,'')}</b> is clearer: only ${alt.q}% · ${walk(alt)} min walk</span></button>`:''}
+    ${actions}
+  </div>`;
+}
+function truckMenu(){
+  const x=t(), tr=TRUCKS[S.truck], l=level(tr.queue);
+  const sections=[...new Set(tr.menu.map(m=>m[0]))];
+  const cartItems=Object.entries(S.cart).filter(([k,q])=>q>0);
+  const count=cartItems.reduce((a,[,q])=>a+q,0);
+  const total=cartItems.reduce((a,[k,q])=>{const [ti,mi]=k.split('-').map(Number);return a+TRUCKS[ti].menu[mi][3]*q;},0);
+  return `<div class="screen" style="${count?'padding-bottom:180px':''}">
+    <button class="btn ghost sm" style="align-self:flex-start;padding:0 14px" onclick="set({truck:null})">${svg('back',18)} ${HOME_T[S.lang][0]}</button>
+    <div class="card" style="padding:20px;background:linear-gradient(140deg,${tint(tr.color,.24)},rgba(255,255,255,.04));border-color:${tint(tr.color,.4)}">
+      <h2 class="title">${tr.name}</h2>
+      <p class="muted small" style="margin:6px 0 12px">${tr.kind}</p>
+      <span class="pill" style="background:${tint(l.c,.16)};color:${l.c}">${svg(l.icon,16)} ${x.queueNow} ~${Math.round(tr.queue/5)} min</span>
+    </div>
+    ${sections.map(sec=>`<section style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">${sec}</p>
+      ${tr.menu.map((m,mi)=>m[0]!==sec?'':(()=>{const key=S.truck+'-'+mi,q=S.cart[key]||0;return `
+      <div class="card row" style="padding:14px;gap:12px;align-items:flex-start">
+        <div style="flex:1;min-width:0">
+          <div class="row" style="gap:8px;flex-wrap:wrap"><span class="item-title">${m[1]}</span>${m[4]?`<span class="tag">${m[4]}</span>`:''}</div>
+          <div class="small muted" style="margin-top:3px">${m[2]}</div>
+          <div class="item-title" style="margin-top:8px;color:var(--lav)">${money(m[3])}</div>
+        </div>
+        <div class="row" style="gap:8px;align-self:center">
+          ${q?`<button class="qty" aria-label="Remove one ${m[1]}" onclick="qty('${key}',-1)">${svg('minus',16)}</button><b style="min-width:14px;text-align:center">${q}</b>`:''}
+          <button class="qty add" aria-label="Add ${m[1]}" onclick="qty('${key}',1)">${svg('plus',16)}</button>
+        </div>
+      </div>`})()).join('')}</section>`).join('')}
+  </div>
+  ${count?`<div class="orderbar"><button class="btn" onclick="placeOrder()">${svg('bag',20)} ${x.placeOrder} · ${count} ${x.order} · ${money(total)}</button></div>`:''}`;
+}
+function qty(k,d){S.cart[k]=Math.max(0,(S.cart[k]||0)+d);render();}
+function placeOrder(){S.cart={};toast('Order placed! Pick up in ~8 min at the side window');}
+
+function rewards(){
+  const x=t();
+  return `<div class="screen">
+    ${header(x.rTitle)}
+    <div class="card" style="text-align:center;padding:26px;background:linear-gradient(140deg,rgba(201,188,255,.26),rgba(255,199,138,.10));border-color:rgba(201,188,255,.4)">
+      <div class="big" style="color:var(--lav)">${S.points}</div><div class="muted small" style="margin-top:8px">${x.pts}</div>
+    </div>
+    <div class="list">${REWARDS.map(r=>{const got=S.redeemed[r.id],can=S.points>=r.cost;return `
+      <div class="card row" style="gap:12px">
+        <div class="weather" style="background:var(--lav-soft);color:var(--lav)">${svg('star',22)}</div>
+        <div style="flex:1;min-width:0"><div class="item-title">${r.name}</div><div class="small muted">${r.cost} ${x.pts}${got?' · Code <b style="color:var(--sky)">'+got+'</b>':''}</div></div>
+        <button class="btn sm" ${got||!can?'disabled':''} onclick="redeem('${r.id}',${r.cost})">${got?svg('check',18):can?x.redeem:x.need+' '+(r.cost-S.points)}</button>
+      </div>`}).join('')}</div>
+    <section class="card" style="display:flex;flex-direction:column;gap:12px"><p class="eyebrow">${x.earn}</p>
+      <div class="row between small"><span>Report a queue in Crowd Weather</span><b style="color:var(--peach)">+10</b></div>
+      <div class="row between small"><span>Confirm a forecast was right</span><b style="color:var(--peach)">+5</b></div>
+      <div class="row between small"><span>Walk home with a Dawn Pack</span><b style="color:var(--peach)">+20</b></div>
+    </section>
+  </div>`;
+}
+function redeem(id,cost){S.points-=cost;S.redeemed[id]=Math.random().toString(36).slice(2,7).toUpperCase();toast('Redeemed! Show the code at the bar or stand.');}
+
+function dawn(){
+  const x=t(), sizes=PACKS[S.area];
+  const body = !S.verified ? `
+    <div class="card" style="display:flex;flex-direction:column;gap:14px;padding:20px">
+      <div class="weather" style="background:rgba(143,211,255,.14);color:var(--sky)">${svg('shield',26)}</div>
+      <b style="font-size:17px">Only verified people can join a pack.</b>
+      <p class="small muted" style="margin:0;line-height:1.55">Scan your ID once. Your name stays hidden: the group only sees your first name and a verified badge.</p>
+      <button class="btn" onclick="set({verified:true});toast('${x.verified}')">${svg('shield',20)} ${x.verify}</button>
+    </div>`
+  : S.joined ? `
+    <div class="card" style="display:flex;flex-direction:column;gap:14px;padding:20px;background:linear-gradient(140deg,rgba(143,211,255,.20),rgba(255,255,255,.04));border-color:rgba(143,211,255,.4)">
+      <div class="row" style="color:var(--sky)">${svg('check',26)}<b style="font-size:18px;color:var(--text)">${x.joined}</b></div>
+      <div class="row small">${svg('moon',18)} Leaves at <b>${PACK_TIMES[S.pack]}</b> to <b>${S.area}</b></div>
+      <div class="row small">${svg('people',18)} ${sizes[S.pack]+1} people, all verified</div>
+      <div class="row small">${svg('pin',18)} Meeting point B: lit gate by the main exit</div>
+    </div>
+    <button class="btn ghost" onclick="toast('Live route shared with your crew')">${svg('share',18)} Share my live route with my crew</button>
+    <button class="btn ghost" onclick="set({joined:false})">Leave the pack</button>`
+  : `
+    <div class="row small" style="color:var(--mint)">${svg('shield',18)} ${x.verified}</div>
+    <section style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">${x.where}</p>
+      <div class="scroller" role="group">${AREAS.map(a=>`<button class="chip" aria-pressed="${S.area===a}" onclick="set({area:'${a}'})">${a}</button>`).join('')}</div></section>
+    <section style="display:flex;flex-direction:column;gap:10px"><p class="eyebrow">${x.next}</p>
+      ${PACK_TIMES.map((tm,k)=>`<button class="chip" aria-pressed="${S.pack===k}" onclick="set({pack:${k}})" style="flex-direction:row;justify-content:space-between;padding:12px 18px;min-height:60px">
+        <span class="row">${svg('moon',18)} <b style="font-size:16px">${tm}</b></span><span class="small muted">${sizes[k]} going to ${S.area}</span></button>`).join('')}
+    </section>
+    <div class="card row small" style="gap:12px;line-height:1.5">${svg('pin',22)}<span>Meeting point B: lit gate by the main exit. Staff check everyone in before the pack leaves.</span></div>
+    <button class="btn" onclick="S.points+=20;set({joined:true});toast('+20 points for walking home safely')">${x.join}</button>`;
+  return `<div class="screen">${header(x.dTitle,x.dSub)}${body}</div>`;
+}
+
+const TABS=[['forecast','cloud','tF'],['friends','people','tM'],['home','home','tH'],['rewards','star','tR'],['dawn','moon','tD']];
+const SCREENS={welcome,forecast,friends,home,rewards,dawn};
+const NAMES={welcome:'1 · Welcome: language & currency',home:'2 · Home: map & food trucks',forecast:'3 · Crowd Weather',friends:'4 · Friends map',rewards:'5 · Rewards',dawn:'6 · Dawn Pack'};
+
+function render(){
+  const ms=document.getElementById('mapscroll'), mapL=ms?ms.scrollLeft:0, mapT=ms?ms.scrollTop:0; const sc=document.querySelector('.screen'), top=sc?sc.scrollTop:0, key=S.screen+'|'+S.truck, same=render.last===key;
+  const typed=document.getElementById('fname'); const typedVal=typed&&S.screen==='friends'?typed.value:'';
+  document.documentElement.lang=S.lang;
+  let html=SCREENS[S.screen]();
+  if(S.screen!=='welcome') html+=`<nav class="tabs" aria-label="Main">${TABS.map(([k,ic,lab])=>`<button ${S.screen===k?'aria-current="page"':''} onclick="set({screen:'${k}',truck:null})">${svg(ic,21)}${lab==='tH'?HOME_T[S.lang][0]:t()[lab]}</button>`).join('')}</nav>`;
+  if(S.toast) html+=`<div class="toast" role="status">${svg('check',18)} ${esc(S.toast)}</div>`;
+  document.getElementById('app').innerHTML=html;
+  if(same){document.querySelector('.screen').scrollTop=top; const ms2=document.getElementById('mapscroll'); if(ms2){ms2.scrollLeft=mapL;ms2.scrollTop=mapT;} const f=document.getElementById('fname'); if(f&&typedVal&&!S.toast) f.value=typedVal;}
+  render.last=key;
+  document.getElementById('jump').innerHTML=Object.keys(NAMES).map(k=>`<li><button aria-current="${S.screen===k}" onclick="set({screen:'${k}',truck:null})">${NAMES[k]}</button></li>`).join('');
+}
+render();
+</script>
+</body>
+</html>
